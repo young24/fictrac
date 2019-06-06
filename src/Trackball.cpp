@@ -22,7 +22,7 @@
 
 /// OpenCV individual includes required by gcc?
 #include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>  
+#include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/videoio.hpp>
 
@@ -84,7 +84,7 @@ bool intersectSphere(const double camVec[3], double sphereVec[3], const double r
 }
 
 ///
-/// 
+///
 ///
 Trackball::Trackball(string cfg_fn)
     : _init(false), _reset(true), _clean_map(true), _active(true), _kill(false), _do_reset(false)
@@ -210,7 +210,7 @@ Trackball::Trackball(string cfg_fn)
             else {
                 LOG_DBG("No valid mask ignore regions specified in config file (roi_ignr)!");
             }
-                
+
             /// Sphere config read successfully.
             LOG("Input sphere mask automatically generated using %d ignore ROIs!", ignr_polys.size());
         }
@@ -741,7 +741,7 @@ bool Trackball::doSearch(bool allow_global = false)
         if (bad_frame) {
             _data.r_roi = CmPoint64f(0, 0, 0);  // zero absolute orientation
         }
-        
+
         // reset sphere to found orientation with zero motion
         _data.dr_roi = CmPoint64f(0, 0, 0);  // zero relative rotation
         _data.R_roi = CmPoint64f::omegaToMatrix(_data.r_roi);
@@ -817,7 +817,7 @@ void Trackball::updateSphere()
             if (_do_display) { _sphere_view.at<uint8_t>(py, px) = proi[j]; }
         }
     }
-    
+
     if (cnt > 0) {
         _clean_map = false;
         LOG_DBG("Sphere ROI match overlap: %.1f%%", 100 * good / static_cast<double>(cnt));
@@ -840,7 +840,7 @@ void Trackball::updatePath()
 
     // abs vec roi
     _data.r_roi = CmPoint64f::matrixToOmega(_data.R_roi);
-    
+
     // rel vec cam
     _data.dr_cam = _data.dr_roi/*.getTransformed(_roi_to_cam_R)*/;
 
@@ -888,7 +888,7 @@ void Trackball::updatePath()
     _data.velx = _data.dr_lab[1];
     _data.vely = -_data.dr_lab[0];
     _data.step_mag = sqrt(_data.velx * _data.velx + _data.vely * _data.vely);  // magnitude (radians) of ball rotation excluding turning (change in heading)
-    
+
     // test data
     if (_data.cnt > 0) {
         _data.dist += _data.step_mag;
@@ -988,6 +988,16 @@ bool Trackball::logData()
     return ret;
 }
 
+// TODO: write a template method to the value of a field
+void Trackball::getMotionParas(vector<double>& vec)
+{
+  vec.push_back(_data.posx);
+  vec.push_back(_data.posy);
+  vec.push_back(_data.heading);
+  vec.push_back(_data.step_dir);
+  vec.push_back(_data.step_mag);
+}
+
 ///
 ///
 ///
@@ -1012,7 +1022,7 @@ double Trackball::testRotation(const double x[3])
     m[8] = lmat[6] * rmat[2] + lmat[7] * rmat[5] + lmat[8] * rmat[8];
 
     /* Note:
-    
+
     The orientation matrix, _R_roi, is accumulated by pre-multiplying each successive rotation, x.
 
     When rotating the view vectors, the orientation matrix is also pre-multiplied,
@@ -1219,7 +1229,7 @@ void Trackball::drawCanvas(shared_ptr<DrawData> data)
         2 * DRAW_CELL_DIM, 2 * DRAW_CELL_DIM, radPerPix, 360 * CM_D2R);
     static CameraRemapPtr draw_remapper = CameraRemapPtr(new CameraRemap(
         _src_model, draw_camera, _cam_to_roi));
-        
+
     Mat draw_input = canvas(Rect(0, 0, 2 * DRAW_CELL_DIM, 2 * DRAW_CELL_DIM));
     draw_remapper->apply(src_frame, draw_input);
 
@@ -1368,7 +1378,7 @@ void Trackball::drawCanvas(shared_ptr<DrawData> data)
         canvas.cols - 184, 15,
         255, 255, 0);
     shadowText(canvas, "input image",
-        2, 2 * DRAW_CELL_DIM - 8, 
+        2, 2 * DRAW_CELL_DIM - 8,
         255, 255, 0);
     shadowText(canvas, "flat path",
         2, 3 * DRAW_CELL_DIM - 8,
@@ -1437,7 +1447,7 @@ void Trackball::dumpState()
 bool Trackball::writeTemplate(std::string fn)
 {
     if (!_init) { return false; }
-    
+
     string template_fn = _base_fn + "-template.png";
 
     bool ret = cv::imwrite(template_fn, _sphere_map);

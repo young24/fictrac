@@ -15,7 +15,7 @@
 
 /// OpenCV individual includes required by gcc?
 #include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>  
+#include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/videoio.hpp>
 
@@ -100,6 +100,9 @@ public:
     void dumpState();
     bool writeTemplate(std::string fn = "");
 
+    // Get posx, posy, heading, step_dir, step_mag from DATA
+    void getMotionParas(std::vector<double>& vec);
+
 private:
     /// Worker function.
     void process();
@@ -157,7 +160,7 @@ private:
     /// Sphere vars.
     double _sphere_rad, _r_d_ratio;
     CmPoint64f _sphere_c;
-    
+
     /// Optimisation.
     std::unique_ptr<Localiser> _localOpt, _globalOpt;
     double _error_thresh, _err;
