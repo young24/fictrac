@@ -373,7 +373,7 @@ Trackball::Trackball(string cfg_fn)
         _roi_mask, _p1s_lut);
 
     /// Output.
-    string data_fn = _base_fn + "-" + execTime() + ".dat";
+	string data_fn = "tracking-results.txt";//_base_fn + "-" + execTime() + ".txt";
     _data_log = make_unique<Recorder>(RecorderInterface::RecordType::FILE, data_fn);
     if (!_data_log->is_active()) {
         LOG_ERR("Error! Unable to open output data log file (%s).", data_fn.c_str());
@@ -938,6 +938,12 @@ Trackball::Trackball(string cfg_fn, Mat img)
         thresh_win_pc
     );
 
+	//TODO: determine _roi_frame
+	_src_frame = img;
+	_roi_frame = img;
+
+
+
     /// Write all parameters back to config file.
     _cfg.write();
 
@@ -1168,7 +1174,10 @@ void Trackball::processOneFrame()
 	double t1, t2, t3, t4, t5, t6;
 	double t1avg = 0, t2avg = 0, t3avg = 0, t4avg = 0, t5avg = 0, t6avg = 0;
 	double tfirst = -1, tlast = 0;
-	if (!_kill && _active && _frameGrabber->getNextFrameSet(_src_frame, _roi_frame, _data.ts)) 
+
+	//_frameGrabber->getNextFrameSet(_src_frame, _roi_frame, _data.ts)
+
+	if (!_kill && _active) 
 	{
 		// TODO: encapsulate the content as a method
 		t1 = ts_ms();
